@@ -1,6 +1,3 @@
-## 📄 `lightkms-core/README.md`
-
-````markdown
 # LightKMS Core
 
 PBKDF2(HMAC-SHA512) + AES-256-GCM 기반의 경량 암복호화 코어 모듈.
