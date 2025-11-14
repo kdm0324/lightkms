@@ -36,3 +36,4 @@ Thumbs.db
 *.env
 .env
 .env.*
+**/dependency-reduced-pom.xml
