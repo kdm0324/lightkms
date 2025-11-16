@@ -37,3 +37,5 @@ Thumbs.db
 .env
 .env.*
 **/dependency-reduced-pom.xml
+**/dependency-reduced-pom.xml
+**/keystore.json
