@@ -88,3 +88,52 @@ PBKDF2(HMAC-SHA512) + AES-256-GCM 기반 암복호화를 제공합니다.
 - docs/basics.md   : 처음 쓰는 사람을 위한 입문 가이드
 - docs/concepts.md : 용어/원리(KEK/DEK/KDF, 포맷, 회전, 위협모델)
 - docs/diagrams.md : ASCII 다이어그램 모음 (정렬 보장)
+
+---
+## Using as a library
+
+> 아직 Maven Central 배포 전입니다. (로컬 멀티모듈/`mvn install` 기준 예시)
+
+**Maven**
+```xml
+<dependency>
+  <groupId>io.lightkms</groupId>
+  <artifactId>lightkms-core</artifactId>
+  <version>0.1.0</version>
+</dependency>
+````
+
+**Java — Password 경로**
+
+```java
+import io.lightkms.core.KeyManager;
+import io.lightkms.core.LightKmsService;
+import io.lightkms.core.model.EncryptionResult;
+
+KeyManager km = new KeyManager();
+km.put("DEFAULT", System.getenv().getOrDefault("LIGHTKMS_PASSWORD", "")); // ENV 권장
+LightKmsService kms = new LightKmsService(km);
+
+EncryptionResult token = kms.encrypt("DEFAULT", "secret-value");
+String plain = kms.decrypt(token.toString());
+```
+
+**Java — DEK(파일 keystore) 경로**
+
+```java
+import io.lightkms.core.LightKmsService;
+// 아래 FileKeystore API는 프로젝트에 맞게 사용하세요 (예: read DEK by alias)
+import io.lightkms.core.keystore.FileKeystore;
+
+String kek = System.getenv("LIGHTKMS_KEK");
+String ks  = System.getenv().getOrDefault("LIGHTKMS_KEYSTORE",
+              System.getProperty("user.home") + "/.lightkms/keystore.json");
+
+FileKeystore store = FileKeystore.open(ks, kek.toCharArray());
+byte[] dek = store.readDek("DEFAULT");     // alias → DEK(32B)
+
+// Service는 DEK 직접 암복호화 API 제공
+LightKmsService kms = new LightKmsService(new KeyManager()); // (Password 미사용)
+String enc = kms.encryptWithDek("DEFAULT", "secret-value", dek);
+String plain = kms.decryptWithDek(enc, dek);
+```
