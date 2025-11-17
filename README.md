@@ -83,3 +83,8 @@ PBKDF2(HMAC-SHA512) + AES-256-GCM 기반 암복호화를 제공합니다.
 
 * lightkms-core : AES/GCM + PBKDF2 코어, DEK API, File Keystore(JSON)
 * lightkms-cli  : Picocli 기반 CLI (Password/Keystore 자동 전환)
+
+## Docs
+- docs/basics.md   : 처음 쓰는 사람을 위한 입문 가이드
+- docs/concepts.md : 용어/원리(KEK/DEK/KDF, 포맷, 회전, 위협모델)
+- docs/diagrams.md : ASCII 다이어그램 모음 (정렬 보장)
