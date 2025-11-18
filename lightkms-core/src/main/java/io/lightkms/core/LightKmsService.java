@@ -12,7 +12,7 @@ public class LightKmsService {
 
     public EncryptionResult encrypt(String alias, String plaintext) throws Exception {
         char[] pwd = keyManager.get(alias);
-        String b64 = AESGCMEncryptor.encrypt(plaintext, pwd);
+        String b64 = PasswordAesGcmEncryptor.encrypt(plaintext, pwd);
         return new EncryptionResult("AES256_GCM", alias, b64);
     }
 
@@ -30,7 +30,7 @@ public class LightKmsService {
 
         String base64 = encValue.substring(headerEnd + 2);
         char[] pwd = keyManager.get(alias);
-        return AESGCMEncryptor.decrypt(base64, pwd);
+        return PasswordAesGcmEncryptor.decrypt(base64, pwd);
     }
 
     public String encryptWithDek(String alias, String plaintext, byte[] dek) throws Exception {

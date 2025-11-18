@@ -11,20 +11,21 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
-final class AESGCMEncryptor {
+final class PasswordAesGcmEncryptor {
     private static final int KEY_LENGTH = 256;     // bits
     private static final int ITERATIONS = 120_000; // PBKDF2 rounds
     private static final int IV_LENGTH = 12;       // bytes
     private static final int TAG_LENGTH = 128;     // bits
     private static final int SALT_LENGTH = 20;     // bytes
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     static String encrypt(String plaintext, char[] password) throws Exception {
         byte[] salt = new byte[SALT_LENGTH];
-        new SecureRandom().nextBytes(salt);
+        SECURE_RANDOM.nextBytes(salt);
 
         SecretKeySpec key = deriveKey(password, salt);
         byte[] iv = new byte[IV_LENGTH];
-        new SecureRandom().nextBytes(iv);
+        SECURE_RANDOM.nextBytes(iv);
 
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH, iv));
