@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.github.kdm0324</groupId>
+    <artifactId>lightkms-parent</artifactId>
+    <version>0.1.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>lightkms-cli</artifactId>
+  <name>LightKMS CLI</name>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.kdm0324</groupId>
+      <artifactId>lightkms-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>${picocli.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>shade</goal></goals>
+            <configuration>
+              <!-- 원본 JAR은 유지하고, classifier=shaded 로 별도 산출물 생성 -->
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>shaded</shadedClassifierName>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>io.lightkms.cli.LightKmsCli</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
