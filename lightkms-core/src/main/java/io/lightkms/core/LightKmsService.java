@@ -1,5 +1,6 @@
 package io.lightkms.core;
 
+import io.lightkms.core.crypto.AesGcm;
 import io.lightkms.core.model.EncryptionResult;
 
 public class LightKmsService {
@@ -11,7 +12,7 @@ public class LightKmsService {
 
     public EncryptionResult encrypt(String alias, String plaintext) throws Exception {
         char[] pwd = keyManager.get(alias);
-        String b64 = AESGCMEncryptor.encrypt(plaintext, pwd);
+        String b64 = PasswordAesGcmEncryptor.encrypt(plaintext, pwd);
         return new EncryptionResult("AES256_GCM", alias, b64);
     }
 
@@ -29,6 +30,20 @@ public class LightKmsService {
 
         String base64 = encValue.substring(headerEnd + 2);
         char[] pwd = keyManager.get(alias);
-        return AESGCMEncryptor.decrypt(base64, pwd);
+        return PasswordAesGcmEncryptor.decrypt(base64, pwd);
+    }
+
+    public String encryptWithDek(String alias, String plaintext, byte[] dek) throws Exception {
+        String b64 = AesGcm.encrypt(dek, plaintext);
+        return "ENC[AES256_GCM," + alias + "]:" + b64;
+    }
+
+    public String decryptWithDek(String encValue, byte[] dek) throws Exception {
+        int p = encValue.indexOf("]:");
+        if (!encValue.startsWith("ENC[AES256_GCM,") || p < 0) {
+            throw new IllegalArgumentException("invalid header");
+        }
+        String b64 = encValue.substring(p + 2);
+        return AesGcm.decrypt(dek, b64);
     }
 }

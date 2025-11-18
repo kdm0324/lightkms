@@ -36,4 +36,5 @@ Thumbs.db
 *.env
 .env
 .env.*
-/lightkms-cli/dependency-reduced-pom.xml
+**/dependency-reduced-pom.xml
+**/keystore.json
