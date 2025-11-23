@@ -28,11 +28,30 @@ class LightKmsServiceFailureTest {
         km.put("DEFAULT", "P@ss");
         LightKmsService kms = new LightKmsService(km);
 
-        String enc = kms.encrypt("DEFAULT", "hello").toString();
-        // base64 끝 한 글자 바꾸기(간단한 변조)
-        String bad = enc.substring(0, enc.length() - 2) + "A=";
+        // 정상 암호문 생성: ENC[AES256_GCM,DEFAULT]:Base64(salt||iv||ciphertext+tag)
+        String token = kms.encrypt("DEFAULT", "hello").toString();
 
-        assertThrows(Exception.class, () -> kms.decrypt(bad));
+        // 헤더/본문 분리
+        int p = token.indexOf("]:");
+        String head = token.substring(0, p + 2);
+        String b64  = token.substring(p + 2);
+
+        // Base64 → raw bytes
+        byte[] raw = java.util.Base64.getDecoder().decode(b64);
+
+        // password 경로 포맷: salt(20) || iv(12) || ciphertext+tag
+        int saltLen = 20;
+        int ivLen = 12;
+
+        // ciphertext 영역의 임의 바이트 하나를 뒤집어서 태그 검증이 깨지게 함
+        int flipIndex = saltLen + ivLen + 5; // 메시지 길이가 짧아도 안전한 쪽으로 살짝 안쪽
+        raw[flipIndex] ^= 0x01;
+
+        // 다시 Base64로 싸서 ENC 포맷으로 복원
+        String tampered = head + java.util.Base64.getEncoder().encodeToString(raw);
+
+        // 기대: GCM 태그 검증 실패 → 예외 발생
+        assertThrows(Exception.class, () -> kms.decrypt(tampered));
     }
 
     @Test
