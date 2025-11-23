@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    name: Build & Upload Release Assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build shaded CLI
+        run: |
+          mvn -q -B -DskipTests -pl lightkms-cli -am package
+          ls -al lightkms-cli/target
+
+      - name: Generate SHA256
+        run: |
+          shasum -a 256 lightkms-cli/target/*-shaded.jar > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Create GitHub Release & Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            lightkms-cli/target/*-shaded.jar
+            SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

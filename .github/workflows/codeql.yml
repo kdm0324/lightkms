@@ -1,0 +1,42 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+  schedule:
+    - cron: '0 0 * * 0'  # 매주 일요일 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      #   (cli는 shade 등으로 느려질 수 있어서 우선 제외)
+      - name: Build with Maven (custom)
+        run: |
+          mvn -q -B -DskipTests -pl lightkms-core -am package
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3

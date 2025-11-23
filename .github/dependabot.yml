@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Maven 의존성
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "00:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    assignees: [ "kdm0324" ]
+    labels: [ "deps", "automated" ]
+
+  # GitHub Actions 버전 업데이트
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "00:30"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    assignees: [ "kdm0324" ]
+    labels: [ "deps", "ci" ]
