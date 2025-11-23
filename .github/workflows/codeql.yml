@@ -1,0 +1,43 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+  schedule:
+    - cron: '0 0 * * 0'  # 매주 일요일 00:00 UTC
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: CodeQL Analyze (Java/Kotlin)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # CodeQL 초기화 (언어: Java 포함 → Kotlin도 Java로 분석됨)
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          queries: security-and-quality
+
+      # Maven 멀티모듈 자동 빌드 시도 (autobuild가 먼저)
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      # 분석
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
