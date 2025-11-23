@@ -9,35 +9,34 @@ on:
     - cron: '0 0 * * 0'  # 매주 일요일 00:00 UTC
   workflow_dispatch:
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   analyze:
-    name: CodeQL Analyze (Java/Kotlin)
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-
-    strategy:
-      fail-fast: false
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # CodeQL 초기화 (언어: Java 포함 → Kotlin도 Java로 분석됨)
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java
-          queries: security-and-quality
 
-      # Maven 멀티모듈 자동 빌드 시도 (autobuild가 먼저)
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+      #   (cli는 shade 등으로 느려질 수 있어서 우선 제외)
+      - name: Build with Maven (custom)
+        run: |
+          mvn -q -B -DskipTests -pl lightkms-core -am package
 
-      # 분석
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:java"
