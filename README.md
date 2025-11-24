@@ -1,5 +1,11 @@
 # LightKMS
 
+[![Build](https://github.com/kdm0324/lightkms/actions/workflows/ci.yml/badge.svg)](https://github.com/kdm0324/lightkms/actions/workflows/ci.yml)
+[![Release](https://github.com/kdm0324/lightkms/actions/workflows/release.yml/badge.svg)](https://github.com/kdm0324/lightkms/actions/workflows/release.yml)
+[![CodeQL](https://github.com/kdm0324/lightkms/actions/workflows/codeql.yml/badge.svg)](https://github.com/kdm0324/lightkms/actions/workflows/codeql.yml)
+[![Latest release](https://img.shields.io/github/v/release/kdm0324/lightkms?display_name=tag)](https://github.com/kdm0324/lightkms/releases/latest)
+[![License](https://img.shields.io/github/license/kdm0324/lightkms)](LICENSE)
+
 > Lightweight AES-256-GCM + PBKDF2 key management library & CLI for encrypting application config secrets  
 > (DB password, Redis, external API tokens, etc.)
 
@@ -127,6 +133,23 @@ LightKMS는 다음과 같은 상황에서의 사용을 주요 목표로 합니�
 * 서버/컨테이너에 직접 접근할 수 있는 공격자가 KEK, keystore 파일, 런타임 메모리를 모두 읽을 수 있는 상황에서는
   추가적인 보안 장치(네트워크 분리, HSM/KMS, 접근 제어 등)가 필요합니다.
 * 실제 운영 환경에서 사용할 경우, 조직의 보안 정책 및 규제 요구사항에 따른 검토가 필요합니다.
+
+---
+
+## Download & verify
+
+공식 릴리스 JAR는 GitHub Releases 페이지에서 받을 수 있습니다.
+
+```bash
+# (예시) v0.1.1 CLI JAR 다운로드 후 SHA-256 체크섬 검증
+shasum -a 256 lightkms-cli-0.1.1-shaded.jar
+
+# 릴리스에 포함된 SHA256SUMS.txt와 비교
+cat SHA256SUMS.txt | grep lightkms-cli-0.1.1-shaded.jar
+````
+
+* `SHA256SUMS.txt`는 릴리스 페이지의 추가 산출물로 함께 제공됩니다.
+* 출력된 해시 값이 `SHA256SUMS.txt`에 기록된 값과 일치하는지 확인하세요.
 
 ---
 
