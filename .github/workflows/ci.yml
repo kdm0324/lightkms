@@ -29,7 +29,7 @@ jobs:
         run: mvn -q -B -DskipTests -pl lightkms-cli -am package
 
       - name: Upload CLI shaded jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: lightkms-cli-${{ github.sha }}
           path: lightkms-cli/target/*-shaded.jar
